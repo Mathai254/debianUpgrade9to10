@@ -1,0 +1,33 @@
+-
+  name: Upgrade debian 9 to 10
+  hosts: all
+  tasks:
+    -
+      name: Update installed packages
+      command: apt update
+      command: apt upgrade
+      command: apt full-upgrade
+      command: apt --purge autoremove
+    -
+      name: Update /etc/apt/sources.list file
+      command: sed -i 's/stretch/buster/g' /etc/apt/sources.list
+    -
+      name: Update package list
+      command: apt update
+    -
+      name: Minimal system upgrade
+      #to confirm whether task is executable
+      shell: echo "Yes" | apt upgrade -y
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+      register: expect_output
+      #add a default selection of N
+    -
+      name: Upgrading Debian 9 to Debian 10
+      command: apt full-upgrade
+    -
+      name: Verification
+      command: lsb_release -a
+    -
+      name: Clean up outdated packages
+      command: apt --purge autoremove -y
